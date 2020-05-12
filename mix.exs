@@ -1,9 +1,9 @@
-defmodule RsrPool.MixProject do
+defmodule RsrcPool.MixProject do
   use Mix.Project
 
   def project do
     [
-      app: :rsr_pool,
+      app: :rsrc_pool,
       version: "0.1.0",
       elixir: "~> 1.8",
       start_permanent: Mix.env() == :prod,

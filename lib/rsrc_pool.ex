@@ -1,4 +1,4 @@
-defmodule RsrPool do
+defmodule RsrcPool do
   @moduledoc """
   Documentation for RsrPool.
   """
@@ -8,7 +8,7 @@ defmodule RsrPool do
 
   ## Examples
 
-      iex> RsrPool.hello()
+      iex> RsrcPool.hello()
       :world
 
   """

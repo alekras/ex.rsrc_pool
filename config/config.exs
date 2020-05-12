@@ -10,11 +10,11 @@ use Mix.Config
 
 # You can configure your application as:
 #
-#     config :rsr_pool, key: :value
+#     config :rsrc_pool, key: :value
 #
 # and access this configuration in your application as:
 #
-#     Application.get_env(:rsr_pool, :key)
+#     Application.get_env(:rsrc_pool, :key)
 #
 # You can also configure a third-party app:
 #
