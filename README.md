@@ -1,5 +1,5 @@
 # RsrPool
-Resource pool implemented in Elixir
+Resource pool is implemented in Elixir
 
 ## Installation
 
