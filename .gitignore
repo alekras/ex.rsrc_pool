@@ -27,3 +27,4 @@ rsr_pool-*.tar
 .elixir_ls/
 /.DS_Store
 /src/
+/s_r_c/

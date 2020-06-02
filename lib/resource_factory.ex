@@ -10,27 +10,27 @@ defmodule DefaultResourceFactory do
   @behaviour ResourceFactory
 
   @impl true
-  def create(resource_metadata) do
+  def create(_resource_metadata) do
     {:ok, make_ref()}
   end
 
   @impl true
-  def destroy(resource_metadata, resource) do
+  def destroy(_resource_metadata, _resource) do
     :ok
   end
 
   @impl true
-  def validate(resource_metadata, resource) do
+  def validate(_resource_metadata, _resource) do
     true
   end
 
   @impl true
-  def activate(resource_metadata, resource) do
+  def activate(_resource_metadata, _resource) do
     :ok
   end
 
   @impl true
-  def passivate(resource_metadata, resource) do
+  def passivate(_resource_metadata, _resource) do
     :ok
   end
 

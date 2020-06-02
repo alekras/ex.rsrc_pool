@@ -89,7 +89,7 @@ defmodule ResourcePool.GenServer do
         apply(factory_mod, :destroy, [rsrc_MD, resource])
         {:reply, :ok, %PoolState{state | active: List.keydelete(active, resource, 0)}}
       {_, _} -> {:reply, {:error, :not_owner}, state}
-      false  -> {:reply, {:error, :not_active}, state}
+      nil  -> {:reply, {:error, :not_active}, state}
     end
   end
 
@@ -99,7 +99,7 @@ defmodule ResourcePool.GenServer do
     resource_tuple = List.keyfind(active, resource, 0)
 #  io:format(user, " >>> resource_pool_srv:handle_cast(return, ..): {~p, ~p} {Rsrc, Owner}:~p Req-er:~p ~p~n", [length(Active), length(Idle), Resource_tuple, Requester, Waiting]),
     case resource_tuple do
-      false -> {:noreply, state}
+      nil -> {:noreply, state}
       {resource, owner} when owner == requester ->
         case waiting do
           [] ->
@@ -200,7 +200,7 @@ defmodule ResourcePool.GenServer do
       case action do
         :fail -> {:reply, {:error, :pool_exhausted}, state};
         :block ->
-          case Enum.member?(owner, waiting) do
+          case Enum.member?(waiting, owner) do
             true  -> {:reply, {:wait, state.max_wait}, state};
             false -> {:reply, {:wait, state.max_wait}, %PoolState{state | waiting: [owner | waiting]}}
           end
