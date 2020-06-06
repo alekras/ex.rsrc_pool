@@ -45,6 +45,7 @@ defmodule TestResource do
     {:ok, %TestResourceState{}}
   end
 
+  @impl true
   def handle_call(:is_valid, _from, state) do
     {:reply, state.valid, state}
   end
@@ -73,6 +74,7 @@ defmodule TestResource do
     {:reply, :ok, state}
   end
 
+  @impl true
   def handle_cast(:stop, state) do
     {:stop, :normal, state}
   end

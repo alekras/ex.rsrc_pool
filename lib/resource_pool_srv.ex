@@ -86,7 +86,7 @@ defmodule ResourcePool.GenServer do
   def handle_call({:invalidate, resource}, {requester, _}, %PoolState{active: active, factory_module: factory_mod, resource_metadata: rsrc_MD} = state) do
     case List.keyfind(active, resource, 0) do
       {resource, owner} when requester === owner ->
-        apply(factory_mod, :destroy, [rsrc_MD, resource])
+        factory_mod.destroy(rsrc_MD, resource)
         {:reply, :ok, %PoolState{state | active: List.keydelete(active, resource, 0)}}
       {_, _} -> {:reply, {:error, :not_owner}, state}
       nil  -> {:reply, {:error, :not_active}, state}
@@ -97,32 +97,31 @@ defmodule ResourcePool.GenServer do
   def handle_cast({:return, resource, requester}, state) do
     %PoolState{active: active, idle: idle, factory_module: factory_mod, resource_metadata: rsrc_MD, waiting: waiting} = state
     resource_tuple = List.keyfind(active, resource, 0)
-#  io:format(user, " >>> resource_pool_srv:handle_cast(return, ..): {~p, ~p} {Rsrc, Owner}:~p Req-er:~p ~p~n", [length(Active), length(Idle), Resource_tuple, Requester, Waiting]),
+#  :io.format(:user, "~n >>> resource_pool_srv.handle_cast(:return, ..): {~p, ~p} {rsrc, owner}:~p req-er:~p ~p~n", [length(active), length(idle), resource_tuple, requester, waiting])
     case resource_tuple do
       nil -> {:noreply, state}
       {resource, owner} when owner == requester ->
         case waiting do
           [] ->
             new_idle =
-            case ((not state.test_on_return) or apply(factory_mod, :validate, [Rsrc_MD, Resource]))
+            case ((not state.test_on_return) or factory_mod.validate(rsrc_MD, resource))
                  and ((state.max_idle < 0) or (length(idle) < state.max_idle)) do
               true -> add_to_idle(resource, state)
               false ->
-                apply(factory_mod, :destroy, [rsrc_MD, resource])
+                factory_mod.destroy(rsrc_MD, resource)
                 idle
             end
             {:noreply, %PoolState{state | active: List.keydelete(active, resource, 0), idle: new_idle}};
           _ ->
             {others, [waiting_client]} = Enum.split(waiting, length(waiting) - 1)
-            case (not state.test_on_borrow) or apply(factory_mod, :validate, [rsrc_MD, resource]) do
+            case (not state.test_on_borrow) or factory_mod.validate(rsrc_MD, resource) do
               true ->
-#  io:format(user, " --- resource_pool_srv:handle_cast(return, ..): Wait_clt:~p Other_Wait:~p ~n", [Waiting_client, Others]),
-                apply(factory_mod, :passivate, [rsrc_MD, resource])
-                apply(factory_mod, :activate, [{rsrc_MD, waiting_client}, resource])
+                factory_mod.passivate(rsrc_MD, resource)
+                factory_mod.activate({rsrc_MD, waiting_client}, resource)
                 send(waiting_client, {:ok, resource})
                 {:noreply, %PoolState{state | active: List.keyreplace(active, resource, 0, {resource, {:tmp, waiting_client}}), waiting: others}};
               false ->
-                apply(factory_mod, :destroy, [rsrc_MD, resource])
+                factory_mod.destroy(rsrc_MD, resource)
                 {:noreply, %PoolState{state | active: List.keydelete(active, resource, 0)}}
             end
         end
@@ -133,7 +132,7 @@ defmodule ResourcePool.GenServer do
   def handle_cast(:add, %PoolState{idle: idle, factory_module: factory_mod, resource_metadata: rsrc_MD} = state) do
     case ((state.max_idle < 0) or (length(idle) < state.max_idle)) do
       true ->
-        case apply(factory_mod, :create, [rsrc_MD]) do
+        case factory_mod.create(rsrc_MD) do
           {:ok, resource} ->
             {:noreply, %PoolState{state | idle: add_to_idle(resource, state)}}
           {:error, _err} ->
@@ -147,36 +146,36 @@ defmodule ResourcePool.GenServer do
     if length(idle) <= state.min_idle do
       {:noreply, state}
     else
-      case List.keytake(idle, resource, 1) do
+      case List.keytake(idle, resource, 0) do
         nil ->
           {:noreply, state}
         {_, new_idle} ->
-          apply(factory_mod, :destroy, [state.resource_metadata, resource])
+          factory_mod.destroy(state.resource_metadata, resource)
           {:noreply, %PoolState{state | idle: new_idle}}
       end
     end
   end
 
   def handle_cast(:clear, %PoolState{active: active, idle: idle, factory_module: factory_mod, resource_metadata: rsrc_MD} = state) do
-    for {rsrc, _} <- active, do: apply(factory_mod, :destroy, [rsrc_MD, rsrc])
+    for {rsrc, _} <- active, do: factory_mod.destroy(rsrc_MD, rsrc)
     for {rsrc, pid} <- idle do
       send(pid, :cancel)
-      apply(factory_mod, :destroy, [rsrc_MD, rsrc])
+      factory_mod.destroy(rsrc_MD, rsrc)
     end
     {:noreply, %PoolState{state | active: [], idle: []}}
   end
 
   def handle_cast(:close, %PoolState{active: active, idle: idle, factory_module: factory_mod, resource_metadata: rsrc_MD} = state) do
-    for {rsrc, _} <- active, do: apply(factory_mod, :destroy, [rsrc_MD, rsrc])
+    for {rsrc, _} <- active, do: factory_mod.destroy(rsrc_MD, rsrc)
     for {rsrc, pid} <- idle do
       send(pid, :cancel)
-      apply(factory_mod, :destroy, [rsrc_MD, rsrc])
+      factory_mod.destroy(rsrc_MD, rsrc)
     end
     {:stop, :normal, state}
   end
 
   defp add_to_idle(resource, %PoolState{idle: idle, factory_module: factory_mod, resource_metadata: rsrc_MD} = state) do
-    apply(factory_mod, :passivate, [rsrc_MD, resource])
+    factory_mod.passivate(rsrc_MD, resource)
     self = self()
     pid = spawn_link(fn() ->
       receive do
@@ -210,9 +209,9 @@ defmodule ResourcePool.GenServer do
   defp process_borrow({owner, _} = from, %PoolState{active: active, factory_module: factory_mod, min_idle: min_idle, resource_metadata: rsrc_MD} = state, _num_active, num_idle)
     when num_idle <= min_idle
     do
-      case apply(factory_mod, :create, [rsrc_MD]) do
+      case factory_mod.create(rsrc_MD) do
         {:ok, resource} when (num_idle == min_idle) ->
-          apply(factory_mod, :activate, [{rsrc_MD, owner}, resource])
+          factory_mod.activate({rsrc_MD, owner}, resource)
           {:reply, {:ok, resource}, %PoolState{state | active: [{resource, owner} | active]}}
         {:ok, resource} ->
           handle_call(:borrow, from, %PoolState{state | idle: add_to_idle(resource, state)})
@@ -232,12 +231,12 @@ defmodule ResourcePool.GenServer do
           {rsrc, p, n_idle}
       end
     send(pid, :cancel)
-    case (not state.test_on_borrow) or apply(factory_mod, :validate, [rsrc_MD, resource]) do
+    case (not state.test_on_borrow) or factory_mod.validate(rsrc_MD, resource) do
       true ->
-        apply(factory_mod, :activate, [{rsrc_MD, owner}, resource])
+        factory_mod.activate({rsrc_MD, owner}, resource)
         {:reply, {:ok, resource}, %PoolState{state | idle: new_idle, active: [{resource, owner} | active]}}
       false ->
-        apply(factory_mod, :destroy, [rsrc_MD, resource])
+        factory_mod.destroy(rsrc_MD, resource)
         handle_call(:borrow, from, %PoolState{state | idle: new_idle})
     end
   end
