@@ -22,8 +22,8 @@ line `-{0,0}-` show the load of containers: `-{N_active,N_idle}-`,
 
  where:
 <ul style="list-style-type:none">
-<li>`N_active` - number of active resources;</li>
-<li>`N_idle` - number of idle resources.</li>
+<li><code>N_active</code> - number of active resources;</li>
+<li><code>N_idle</code> - number of idle resources.</li>
 </ul>
 
 ## Operations
@@ -108,7 +108,7 @@ puts it into `Idle` list.
 
 ### invalidate
 If resource failed then a process has to let know about it to the pool. `invalidate` function marks failed resource
-as unusable and pool will be destroy it shortly.
+as unusable and pool will destroy it shortly.
 
 ```elixir
   ResourcePool.invalidate(:test_pool, resource)
@@ -128,10 +128,10 @@ Suppose that `Resource` module implements some operations under resource.
 
 ```elixir
   case ResourcePool.borrow(:test_pool) do
-    {:error, e} -> IO.put("Error while borrow from pool, reason: #{e}");
+    {:error, e} -> IO.put("Error while borrow from pool, reason: #{e}")
     resource ->
       try do
-        Resource.operation(resource),
+        Resource.operation(resource)
         ResourcePool.return(:test_pool, resource)
       catch
         _ -> ResourcePool.invalidate(:test_pool, resource)
@@ -294,15 +294,15 @@ different types of resources.
 `ResourceFactory` module defines `behavior` of generic resource factory. We have to implement this 
 `behavior` while designing of resource factory module for given resource. The module has to consist following functions:
 <dl>
-<dt> `create(resource_metadata::term())` </dt><dd> The function creates new instance of the resource. In Elixir word this is a new
- process in most cases. `resource_metadata` is a data structure that describes an resource. `resource_metadata` came
- to the pool from `new` operation and it has to be enough to create and manage the resource. Structure and contain of
- the `resource_metadata` is custom and it is used only by `ResourceFactory` but is kept as a pool state.</dd>
-<dt> `destroy(resource_metadata::term(), resource::pid())` </dt><dd> The function destroys the resource represented by `resource` as a `Pid`.</dd>
-<dt> `validate(resource_metadata::term(), resource::pid())` </dt><dd> The function check an `resource` and returns true if the resource is valid.</dd>
-<dt> `activate(resource_metadata::term(), resource::pid())` </dt><dd> The function is callback that is fired when pool are moving `resource` from
+<dt> create(resource_metadata::term()) </dt><dd> The function creates new instance of the resource. In Elixir world this is a new
+ process in most cases. <code>resource_metadata</code> is a data structure that describes an resource. <code>resource_metadata</code> came
+ to the pool from <code>new</code> operation and it has to be enough to create and manage the resource. Structure and contain of
+ the <code>resource_metadata</code> is custom and it is used only by <code>ResourceFactory</code> but is kept as a pool state.</dd>
+<dt> destroy(resource_metadata::term(), resource::pid()) </dt><dd> The function destroys the resource represented by <code>resource</code> as a <code>Pid</code>.</dd>
+<dt> validate(resource_metadata::term(), resource::pid()) </dt><dd> The function check an <code>resource</code> and returns true if the resource is valid.</dd>
+<dt> activate(resource_metadata::term(), resource::pid()) </dt><dd> The function is callback that is fired when pool are moving <code>resource</code> from
  passive state to active (from idle list to active list).</dd>
-<dt> `passivate(resource_metadata::term(), resource::pid())` </dt><dd> The function is callback that is fired when pool are moving `resource` from
+<dt> passivate(resource_metadata::term(), resource::pid()) </dt><dd> The function is callback that is fired when pool are moving <code>resource</code> from
  active state to passive (from active list to idle list).</dd>
 </dl>
 
