@@ -202,10 +202,10 @@ Example of use:
 ### Borrow with exhausted pool
 When we set max_active greater then 0 and size of Active list reaches this value then the pool is exhausted and pool's behaivior depends on when_exhausted_action option value:
 <dl>
-<dt> `{:when_exhausted_action, :fail}`</dt><dd>`borrow` function on exhausted pool returns `{:error, :pool_exhausted}`.</dd>
-<dt> `{:when_exhausted_action, :block}`</dt><dd>`borrow` function on exhausted pool is blocked until a new or idle object is available.
+<dt> {:when_exhausted_action, :fail}</dt><dd><code>borrow</code> function on exhausted pool returns <code>{:error, :pool_exhausted}</code>.</dd>
+<dt> {:when_exhausted_action, :block}</dt><dd><code>borrow</code> function on exhausted pool is blocked until a new or idle object is available.
  Waiting time period is limited by value of other option max_wait (see [Timing](#timing)).</dd>
-<dt> `{:when_exhausted_action, :grow}`</dt><dd>`borrow` function on exhausted pool returns new resource and size of `Active` list grows. In this case `max_active` option is just ignored.</dd>
+<dt> {:when_exhausted_action, :grow}</dt><dd><code>borrow</code> function on exhausted pool returns new resource and size of <code>Active</code> list grows. In this case <code>max_active</code> option is just ignored.</dd>
 </dl>
 Default value is `block`. 
 Example of use: 
