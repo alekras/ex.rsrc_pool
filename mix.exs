@@ -8,7 +8,14 @@ defmodule ResourcePool.MixProject do
       elixir: "~> 1.8",
       start_permanent: Mix.env() == :prod,
       elixirc_paths: elixirc_paths(Mix.env()),
-      deps: deps()
+      deps: deps(),
+      # Documentation config:
+      name: "Resource pool",
+      source_url: "https://github.com/alekras/ex.rsrc_pool",
+      # homepage_url: "http://YOUR_PROJECT_HOMEPAGE",
+      docs: [ #main: "MyApp", # The main page in the docs
+             #logo: "path/to/logo.png",
+             extras: ["README.md"]]
     ]
   end
 

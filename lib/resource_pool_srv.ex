@@ -1,4 +1,6 @@
 defmodule PoolState do
+  @moduledoc false
+
   defstruct active: [],
             idle: [],
             waiting: [],
@@ -17,11 +19,17 @@ end
 
 defmodule ResourcePool.GenServer do
   @moduledoc """
-  Documentation for ResourcePool.GenServer.
+  The module `ResourcePool.GenServer` implements resource pool functionality.
   """
   use GenServer
 
+  @doc false
+  def child_spec(init_arg) do
+    [ResourcePool.GenServer, init_arg]
+  end
+
   @doc """
+  Takes argument tuple of options, factory_module and resource_metadata.
   """
   @impl true
   def init({options, factory_module, resource_metadata}) do
@@ -43,6 +51,8 @@ defmodule ResourcePool.GenServer do
   end
 
   @doc """
+  * handle message `:borrow`
+  * handle message `{:ack_borrow, {:error, :pool_timeout}}`
   """
   @impl true
   def handle_call(:borrow, from, %PoolState{active: active, idle: idle} = state) do
@@ -187,8 +197,7 @@ defmodule ResourcePool.GenServer do
     [{resource, pid} | idle]
   end
 
-  @doc """
-  """
+  #
   defp process_borrow({owner, _},
                       %PoolState{waiting: waiting, when_exhausted_action: action, max_active: max_active, } = state,
                       num_active, _num_idle)

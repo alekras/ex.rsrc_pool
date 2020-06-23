@@ -6,38 +6,36 @@ Resource pool project was inspired by Apache Commons Pool library and API was bo
 implementation is completely different, written in Elixir and it is using Erlang OTP design principles and Erlang concurrent model. Resource Pool is Elixir application library.   
 
 ## Structure
-<ul>
-  <li><code>ResourcePool.GenServer (resource_pool_srv.ex)</code> is a main module of Resource Pool. It is generic server and implements 
-almost all Pool functionality.</li>
-  <li><code>ResourcePool (resource_pool.ex)</code> is a facade for GenServer and exposes all API functions.</li>
-  <li><code>ResourceFactory (resource_factory.ex)</code> defines <i>resource_factory</i> behaviour.</li>
-</ul>
+  - `ResourcePool.GenServer` (resource_pool_srv.ex) is a main module of Resource Pool. It is generic server and implements 
+    almost all Pool functionality.
+  - `ResourcePool` (resource_pool.ex) is a facade for GenServer and exposes all API functions.
+  - `ResourceFactory` (resource_factory.ex) defines `ResourceFactory` behaviour.
 
 ## Getting started
-<ol>
-  <li>Create instance of Resource Pool<br/> 
-    <pre>{:ok, pid} = ResourcePool.new(:test_pool, ResourceFactory, [])</pre>
-    where: 
-    <ul style="list-style-type:none;">
-      <li><code>:test_pool</code> - registered name of the new pool;</li>
-      <li><code>ResourceFactory</code> - name of a module that implements ResourceFactory behaviour.</li>
-    </ul>
-    New resource pool is usually shared between few processes.  
-  </li>
-  <li>Borrow resource from pool<br/>
-    <pre>resource = ResourcePool.borrow(:test_pool)</pre>
-    The process can use the borrowed resource and has to return to pool after finish. 
-  </li>
-  <li>Return resource to pool<br/>
-      <pre>:ok = ResourcePool.return(:test_pool, resource)</pre>
-      The process cannot use the <code>resource</code> anymore.
-  </li>
-  <li>Pool can be created with options:<br/>
-    <pre>options = [max_active: 10, when_exhausted_action: fail]</pre>
-    <pre>{:ok, pid} = ResourcePool.new(:test_pool, ResourceFactory, options)</pre>
-    See ResourcePool for more details about options. 
-  </li>
-</ol>
+  1. Create instance of Resource Pool
+   ```
+    {:ok, pid} = ResourcePool.new(:test_pool, ResourceFactory, [])
+   ```
+   where: 
+      - `:test_pool` - registered name of the new pool;
+      - `ResourceFactory` - name of a module that implements `ResourceFactory` behaviour.
+   New resource pool is usually shared between few processes.  
+  2. Borrow resource from pool
+   ```
+    resource = ResourcePool.borrow(:test_pool)
+   ```
+   The process can use the borrowed resource and has to return to pool after finish. 
+  3. Return resource to pool
+   ```
+      :ok = ResourcePool.return(:test_pool, resource)
+   ```
+   The process cannot use the `resource` anymore.
+  4. Pool can be created with options:
+   ```
+    options = [max_active: 10, when_exhausted_action: fail]
+    {:ok, pid} = ResourcePool.new(:test_pool, ResourceFactory, options)
+   ``` 
+   See ResourcePool for more details about options.
 
 See [Resource Pool](README_1.md) article for details and [http://erlpool.sourceforge.net/](http://erlpool.sourceforge.net/).
 
