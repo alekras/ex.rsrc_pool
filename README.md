@@ -13,29 +13,29 @@ implementation is completely different, written in Elixir and it is using Erlang
 
 ## Getting started
   1. Create instance of Resource Pool
-   ```
-    {:ok, pid} = ResourcePool.new(:test_pool, ResourceFactory, [])
-   ```
-   where: 
-      - `:test_pool` - registered name of the new pool;
-      - `ResourceFactory` - name of a module that implements `ResourceFactory` behaviour.
-   New resource pool is usually shared between few processes.  
+     ```
+     {:ok, pid} = ResourcePool.new(:test_pool, ResourceFactory, [])
+     ```
+     where: 
+       - `:test_pool` - registered name of the new pool;
+       - `ResourceFactory` - name of a module that implements `ResourceFactory` behaviour.
+     New resource pool is usually shared between few processes.  
   2. Borrow resource from pool
-   ```
-    resource = ResourcePool.borrow(:test_pool)
-   ```
-   The process can use the borrowed resource and has to return to pool after finish. 
+     ```
+     resource = ResourcePool.borrow(:test_pool)
+     ```
+     The process can use the borrowed resource and has to return to pool after finish. 
   3. Return resource to pool
-   ```
-      :ok = ResourcePool.return(:test_pool, resource)
-   ```
-   The process cannot use the `resource` anymore.
+     ```
+     :ok = ResourcePool.return(:test_pool, resource)
+     ```
+     The process cannot use the `resource` anymore.
   4. Pool can be created with options:
-   ```
-    options = [max_active: 10, when_exhausted_action: fail]
-    {:ok, pid} = ResourcePool.new(:test_pool, ResourceFactory, options)
-   ``` 
-   See ResourcePool for more details about options.
+     ```
+     options = [max_active: 10, when_exhausted_action: fail]
+     {:ok, pid} = ResourcePool.new(:test_pool, ResourceFactory, options)
+     ``` 
+     See ResourcePool for more details about options.
 
 See [Resource Pool](README_1.md) article for details and [http://erlpool.sourceforge.net/](http://erlpool.sourceforge.net/).
 
