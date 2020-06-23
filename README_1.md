@@ -17,14 +17,11 @@ used anywhere and they are in inactive state but ready to use.
       | +-------+  +-------+ |
       +----------------------+
 
-We will use a diagram above to explain operations with pool in following text. Symbols in right of first
-line `-{0,0}-` show the load of containers: `-{N_active,N_idle}-`,
+We will use a diagram above to explain operations with pool in following text. Symbols in right of first line `-{0,0}-` show the load of containers: `-{N_active,N_idle}-`,
 
- where:
-<ul style="list-style-type:none">
-<li><code>N_active</code> - number of active resources;</li>
-<li><code>N_idle</code> - number of idle resources.</li>
-</ul>
+where:
+ - `N_active` - number of active resources;
+ - `N_idle` - number of idle resources.
 
 ## Operations
 
@@ -36,8 +33,7 @@ First thing we have to do is create an instance of resource pool.
 
 `:test_pool` is a registered name for the new pool and `ResourceFactory` is a name of a module 
 that implements resource_factory behaviour. Now we can use `:test_pool`
-or `pid` as a reference to pool instance. Resource factory module will be responsible for creating, checking and disposing
-of resource instances and is discussed in details in [Resource factory](#resource-factory) section below.
+or `pid` as a reference to pool instance. Resource factory module will be responsible for creating, checking and disposing of resource instances and is discussed in details in [Resource factory](#resource-factory) section below.
 
 The common scenario of using of the resource pool is state with a few concurrently running processes shares the same pool to borrow resources from it.
 
@@ -157,6 +153,7 @@ responsible for size of `Active` and `Idle` containers:
  max_idle,
  min_idle
 
+
 ```
              +-Pool-----------{0,0}-+
              |                      |
@@ -200,13 +197,12 @@ Example of use:
 
 ## Behaviour options
 ### Borrow with exhausted pool
-When we set max_active greater then 0 and size of Active list reaches this value then the pool is exhausted and pool's behaivior depends on when_exhausted_action option value:
-<dl>
-<dt> {:when_exhausted_action, :fail}</dt><dd><code>borrow</code> function on exhausted pool returns <code>{:error, :pool_exhausted}</code>.</dd>
-<dt> {:when_exhausted_action, :block}</dt><dd><code>borrow</code> function on exhausted pool is blocked until a new or idle object is available.
- Waiting time period is limited by value of other option max_wait (see [Timing](#timing)).</dd>
-<dt> {:when_exhausted_action, :grow}</dt><dd><code>borrow</code> function on exhausted pool returns new resource and size of <code>Active</code> list grows. In this case <code>max_active</code> option is just ignored.</dd>
-</dl>
+When we set max_active greater then 0 and size of Active list reaches this value then the pool is exhausted and pool's behaiviour depends on when_exhausted_action option value:
+ * **{:when_exhausted_action, :fail}** - `borrow` function on exhausted pool returns `{:error, :pool_exhausted}`.
+ * **{:when_exhausted_action, :block}**  - `borrow` function on exhausted pool is blocked until a new or idle object is available.
+   Waiting time period is limited by value of other option max_wait (see [Timing](#timing)).
+ * **{:when_exhausted_action, :grow}** - `borrow` function on exhausted pool returns new resource and size of `Active` list grows. In this case `max_active` option is just ignored.
+
 Default value is `block`. 
 Example of use: 
 
@@ -293,16 +289,15 @@ different types of resources.
 
 `ResourceFactory` module defines `behavior` of generic resource factory. We have to implement this 
 `behavior` while designing of resource factory module for given resource. The module has to consist following functions:
-<dl>
-<dt> create(resource_metadata::term()) </dt><dd> The function creates new instance of the resource. In Elixir world this is a new
- process in most cases. <code>resource_metadata</code> is a data structure that describes an resource. <code>resource_metadata</code> came
- to the pool from <code>new</code> operation and it has to be enough to create and manage the resource. Structure and contain of
- the <code>resource_metadata</code> is custom and it is used only by <code>ResourceFactory</code> but is kept as a pool state.</dd>
-<dt> destroy(resource_metadata::term(), resource::pid()) </dt><dd> The function destroys the resource represented by <code>resource</code> as a <code>Pid</code>.</dd>
-<dt> validate(resource_metadata::term(), resource::pid()) </dt><dd> The function check an <code>resource</code> and returns true if the resource is valid.</dd>
-<dt> activate(resource_metadata::term(), resource::pid()) </dt><dd> The function is callback that is fired when pool are moving <code>resource</code> from
- passive state to active (from idle list to active list).</dd>
-<dt> passivate(resource_metadata::term(), resource::pid()) </dt><dd> The function is callback that is fired when pool are moving <code>resource</code> from
- active state to passive (from active list to idle list).</dd>
-</dl>
+
+ * **create(resource_metadata :: list())** - The function creates new instance of the resource. In Elixir world this is a new
+   process in most cases. `resource_metadata` is a data structure that describes an resource. `resource_metadata` came
+   to the pool from `new` operation and it has to be enough to create and manage the resource. Structure and contain of
+   the `resource_metadata` is custom and it is used only by `ResourceFactory` but is kept as a pool state.
+ * **destroy(resource_metadata::term(), resource::pid())** - The function destroys the resource represented by `resource` as a `Pid`.
+ * **validate(resource_metadata::term(), resource::pid())** - The function check an `resource` and returns true if the resource is valid.
+ * **activate(resource_metadata::term(), resource::pid())** - The function is callback that is fired when pool are moving `resource` from
+   passive state to active (from idle list to active list).
+ * **passivate(resource_metadata::term(), resource::pid())** - The function is callback that is fired when pool are moving `resource` from
+   active state to passive (from active list to idle list).
 
