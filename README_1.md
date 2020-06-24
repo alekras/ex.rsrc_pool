@@ -1,4 +1,4 @@
-# Resource Pool
+# Resource Pool - article
 
 ## Introduction
 Some software resources have time and memory cost to create and reusing them can dramatically improve application performance. Resource pooling is widely used for resource reusing in different platform and languages. This project was inspired by Apache Commons Pool Java library. API and main functioning principals was borrowed from there, but internal implementation is completely different and is using Erlang OTP design principles and Erlang/Elixir concurrent model. See [Erlang resource pool](https://github.com/alekras/rsrc_pool) for Erlang implementation of the library.
@@ -247,7 +247,6 @@ Default value for `fifo` is `false`.
 ### Timing
 `max_wait` option defines the maximum amount of time to wait when the `borrow` function is invoked,
 the pool is exhausted and `when_exhausted_action` equals `block`.
-
 `max_idle_time` option defines non terminated period of time an resource instance may sit idle in the pool, 
 with the extra condition that at least `min_idle` amount of object remain in the pool. No resources 
 will be evicted from the pool due to maximum idle time limit if `max_idle_time` equals `infinity`.
@@ -294,10 +293,9 @@ different types of resources.
    process in most cases. `resource_metadata` is a data structure that describes an resource. `resource_metadata` came
    to the pool from `new` operation and it has to be enough to create and manage the resource. Structure and contain of
    the `resource_metadata` is custom and it is used only by `ResourceFactory` but is kept as a pool state.
- * **destroy(resource_metadata::term(), resource::pid())** - The function destroys the resource represented by `resource` as a `Pid`.
- * **validate(resource_metadata::term(), resource::pid())** - The function check an `resource` and returns true if the resource is valid.
- * **activate(resource_metadata::term(), resource::pid())** - The function is callback that is fired when pool are moving `resource` from
-   passive state to active (from idle list to active list).
- * **passivate(resource_metadata::term(), resource::pid())** - The function is callback that is fired when pool are moving `resource` from
+ * **destroy(resource_metadata :: term(), resource :: pid())** - The function destroys the resource represented by `resource` as a `Pid`.
+ * **validate(resource_metadata :: term(), resource :: pid())** - The function check an `resource` and returns true if the resource is valid.
+ * **activate(resource_metadata :: term(), resource :: pid())** - The function is callback that is fired when pool are moving `resource` from passive state to active (from idle list to active list).
+ * **passivate(resource_metadata :: term(), resource :: pid())** - The function is callback that is fired when pool are moving `resource` from
    active state to passive (from active list to idle list).
 

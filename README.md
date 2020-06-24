@@ -1,5 +1,6 @@
-# Resource Pool (rsrc_pool)
-Resource pool project is written in Elixir as a tiny library. The goal of the tool is reduce the overhead of creating new resources by reusing of the same resources among multiple processes. Achieving result is better performance and throughput. The resource pool was inspired by Java Apache's commons pool and adopts API and main principals from this project. Database connection is most popular example for pooling resource.
+# Resource Pool - Getting started 
+## Summary
+Resource pool (**rsrc_pool_ex**)project is written in Elixir as a tiny library. The goal of the tool is reduce the overhead of creating new resources by reusing of the same resources among multiple processes. Achieving result is better performance and throughput. The resource pool was inspired by Java Apache's commons pool and adopts API and main principals from this project. Database connection is most popular example for pooling resource.
 
 ## Introduction
 Resource pool project was inspired by Apache Commons Pool library and API was borrowed from there. But internal 
@@ -37,22 +38,22 @@ implementation is completely different, written in Elixir and it is using Erlang
      ``` 
      See ResourcePool for more details about options.
 
-See [Resource Pool](README_1.md) article for details and [http://erlpool.sourceforge.net/](http://erlpool.sourceforge.net/).
+See [**Resource Pool**](README_1.md) article for details and [http://erlpool.sourceforge.net/](http://erlpool.sourceforge.net/).
 
 ## Installation
 
 If [available in Hex](https://hex.pm/docs/publish), the package can be installed
-by adding `rsrc_pool` to your list of dependencies in `mix.exs`:
+by adding `rsrc_pool_ex` to your list of dependencies in `mix.exs`:
 
 ```elixir
 def deps do
   [
-    {:rsrc_pool, "~> 0.1.0"}
+    {:rsrc_pool_ex, "~> 0.1.0"}
   ]
 end
 ```
 
 Documentation can be generated with [ExDoc](https://github.com/elixir-lang/ex_doc)
 and published on [HexDocs](https://hexdocs.pm). Once published, the docs can
-be found at [https://hexdocs.pm/rsrc_pool](https://hexdocs.pm/rsrc_pool).
+be found at [https://hexdocs.pm/rsrc_pool_ex](https://hexdocs.pm/rsrc_pool_ex).
 

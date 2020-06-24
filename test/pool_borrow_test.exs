@@ -172,8 +172,8 @@ defmodule BorrowResourcePoolTest do
     ResourcePoolTest.check_activate_passivate(pool)
     rsrc1 = ResourcePool.borrow(pool)
     assert Process.alive?(rsrc1)
-    assert not Process.alive?(rsrc)
     assert 7 != TestResource.get_id(rsrc1)
+    assert not Process.alive?(rsrc)
     assert {1,0} == ResourcePoolTest.f2(pool)
     ResourcePoolTest.check_activate_passivate(pool)
   end

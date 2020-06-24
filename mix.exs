@@ -3,19 +3,20 @@ defmodule ResourcePool.MixProject do
 
   def project do
     [
-      app: :rsrc_pool,
+      app: :rsrc_pool_ex,
       version: "1.0.3",
       elixir: "~> 1.8",
       start_permanent: Mix.env() == :prod,
       elixirc_paths: elixirc_paths(Mix.env()),
       deps: deps(),
+      description: description(),
+      package: package(),
       # Documentation config:
       name: "Resource pool",
       source_url: "https://github.com/alekras/ex.rsrc_pool",
-      # homepage_url: "http://YOUR_PROJECT_HOMEPAGE",
-      docs: [ #main: "MyApp", # The main page in the docs
-             #logo: "path/to/logo.png",
-             extras: ["README.md"]]
+      docs: [
+        #logo: "path/to/logo.png",
+        extras: ["README.md", "README_1.md"]]
     ]
   end
 
@@ -37,4 +38,19 @@ defmodule ResourcePool.MixProject do
       {:ex_doc, "~> 0.22", only: :dev, runtime: false}
     ]
   end
+
+  defp description() do
+    "The goal of ResourcePool (rsrc_pool_ex) Elixir library is reduce the overhead of creating new resources by reusing of the same resources among multiple processes."
+  end
+
+  defp package() do
+    [
+      # These are the default files included in the package
+      files: ~w(lib test priv .formatter.exs mix.exs README* readme* LICENSE*
+                license* CHANGELOG* changelog* src),
+      licenses: ["Apache-2.0"],
+      links: %{"GitHub" => "https://github.com/alekras/ex.rsrc_pool"}
+    ]
+  end
+
 end
