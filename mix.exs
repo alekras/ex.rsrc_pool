@@ -46,8 +46,7 @@ defmodule ResourcePool.MixProject do
   defp package() do
     [
       # These are the default files included in the package
-      files: ~w(lib test priv .formatter.exs mix.exs README* readme* LICENSE*
-                license* CHANGELOG* changelog* src),
+      files: ~w(lib test mix.exs README*),
       licenses: ["Apache-2.0"],
       links: %{"GitHub" => "https://github.com/alekras/ex.rsrc_pool"}
     ]
